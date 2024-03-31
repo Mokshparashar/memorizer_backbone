@@ -13,7 +13,7 @@ export const registerUser = async (req, res, next) => {
       });
       throw new Error(400, "credentials already exists");
     }
-    await User.create({
+    const user = await User.create({
       name,
       email,
       password,
@@ -21,6 +21,10 @@ export const registerUser = async (req, res, next) => {
 
     res.send({
       message: "user creation successful",
+      user: {
+        name,
+        email,
+      },
       code: 200,
       ok: true,
     });
