@@ -7,7 +7,7 @@ export const registerUser = async (req, res, next) => {
     const existedUser = await User.findOne({ email });
     if (existedUser) {
       res.send({
-        message: "Credentials already exists",
+        message: "Email already taken",
         code: 403,
         ok: false,
       });
