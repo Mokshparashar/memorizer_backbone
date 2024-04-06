@@ -1,5 +1,16 @@
 import { User } from "../models/user.model.js";
 
+const generateAccessAndRefreshToken = async (userId) => {
+  const user = await User.findById(userId);
+
+  const refreshToken = await user.generateRefreshToken();
+  const AccessToken = await user.generateAccessToken();
+
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+
+  return { refreshToken, AccessToken };
+};
 export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -31,7 +42,7 @@ export const registerUser = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-  res.end();
+
   next();
 };
 
@@ -48,27 +59,36 @@ export const loginUser = async (req, res, next) => {
         ok: false,
       });
       throw new Error(404, " Email is not registered");
-    } else {
-      if (password === user.password) {
-        res.send({
-          message: "Congratulations you are in",
-          userData: { name: user.name, email: user.email },
-          code: 200,
-          ok: true,
-        });
-      } else {
-        res.send({
-          message: "Invalid credentials",
-          code: 400,
-          ok: false,
-        });
-        throw new Error(400, "invalid credentials");
-      }
     }
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+
+    if (!isPasswordCorrect) {
+      throw new Error(400, "password is not correct");
+    }
+    const { accessToken, refreshToken } = generateAccessAndRefreshToken(
+      user._id
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+    // const cokkieOptions = {
+    //   httpsOnly: true,
+    //   secure: true,
+    // };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken)
+      .cookie("refreshToken", refreshToken)
+      .json(
+        200,
+        { user: loggedInUser, accessToken, refreshToken },
+        "User loggedIn successFully"
+      );
   } catch (error) {
     console.log(error);
   }
 
-  res.end();
   next();
 };
