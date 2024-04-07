@@ -11,7 +11,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
   return { refreshToken, AccessToken };
 };
-export const registerUser = async (req, res, next) => {
+export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -24,6 +24,7 @@ export const registerUser = async (req, res, next) => {
       });
       throw new Error(400, "credentials already exists");
     }
+
     const user = await User.create({
       name,
       email,
@@ -42,11 +43,9 @@ export const registerUser = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-
-  next();
 };
 
-export const loginUser = async (req, res, next) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -69,26 +68,18 @@ export const loginUser = async (req, res, next) => {
       user._id
     );
 
-    const loggedInUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
-    // const cokkieOptions = {
+    const loggedInUser = await User.findById(user._id).select("-password ");
+    // const cookieOptions = {
     //   httpsOnly: true,
     //   secure: true,
     // };
 
     return res
-      .status(200)
+
       .cookie("accessToken", accessToken)
       .cookie("refreshToken", refreshToken)
-      .json(
-        200,
-        { user: loggedInUser, accessToken, refreshToken },
-        "User loggedIn successFully"
-      );
+      .json({ user: loggedInUser, accessToken, refreshToken });
   } catch (error) {
     console.log(error);
   }
-
-  next();
 };

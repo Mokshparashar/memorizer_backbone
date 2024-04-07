@@ -1,5 +1,4 @@
-import { model } from "mongoose";
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -39,9 +38,8 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
-
-      fullname: this.fullname,
+      name: this.name,
+      passowrd: this.password,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
@@ -56,4 +54,4 @@ userSchema.methods.generateRefreshToken = function () {
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );
 };
-export const User = new model("user", userSchema);
+export const User = mongoose.model("user", userSchema);
