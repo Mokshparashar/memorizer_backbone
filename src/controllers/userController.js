@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
@@ -11,7 +12,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
   return { refreshToken, AccessToken };
 };
-export const registerUser = async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -43,14 +44,14 @@ export const registerUser = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
+});
 
-export const loginUser = async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log(email);
     let user = await User.findOne({ email });
-
+    console.log(user);
     if (!user) {
       res.send({
         message: "User not found",
@@ -68,18 +69,23 @@ export const loginUser = async (req, res) => {
       user._id
     );
 
-    const loggedInUser = await User.findById(user._id).select("-password ");
-    // const cookieOptions = {
-    //   httpsOnly: true,
-    //   secure: true,
-    // };
+    console.log(accessToken);
+    console.log(refreshToken);
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    const cookieOptions = {
+      httpsOnly: true,
+      secure: true,
+    };
 
     return res
-
-      .cookie("accessToken", accessToken)
-      .cookie("refreshToken", refreshToken)
-      .json({ user: loggedInUser, accessToken, refreshToken });
+      .status(200)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .json({ user: loggedInUser });
   } catch (error) {
     console.log(error);
   }
-};
+});
