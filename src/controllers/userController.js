@@ -114,6 +114,5 @@ export const logoutUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .clearCookie("accessToken", accessToken, cookieOptions)
-    .clearCookie("refreshToken", refreshToken, cookieOptions)
-    .json({ user: loggedInUser });
+    .clearCookie("refreshToken", refreshToken, cookieOptions);
 });
