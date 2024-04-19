@@ -111,7 +111,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
-  return res
+  res
     .status(200)
     .clearCookie("accessToken", cookieOptions)
     .clearCookie("refreshToken", cookieOptions);
