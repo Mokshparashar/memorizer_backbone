@@ -105,4 +105,15 @@ export const logoutUser = asyncHandler(async (req, res) => {
       new: true,
     }
   );
+
+  const cookieOptions = {
+    httpsOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", accessToken, cookieOptions)
+    .clearCookie("refreshToken", refreshToken, cookieOptions)
+    .json({ user: loggedInUser });
 });
