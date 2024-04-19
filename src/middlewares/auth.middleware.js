@@ -1,9 +1,9 @@
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
-export const verifyJwt = asyncHandler(async (req, res, next) => {
+export const verifyJwt = asyncHandler(async (req, _, next) => {
   try {
-    const token = req.cookies?.accessToken;
+    const token = await req.cookies?.accessToken;
     if (!token) {
       throw new Error("Token not found");
     }
