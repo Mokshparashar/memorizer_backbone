@@ -5,12 +5,12 @@ const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
 
   const refreshToken = await user.generateRefreshToken();
-  const AccessToken = await user.generateAccessToken();
+  const accessToken = await user.generateAccessToken();
 
   user.refreshToken = refreshToken;
   await user.save({ validateBeforeSave: false });
 
-  return { refreshToken, AccessToken };
+  return { refreshToken, accessToken };
 };
 export const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -49,6 +49,8 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
+    var accessToken;
+    var refreshToken;
     console.log(email);
     let user = await User.findOne({ email });
     console.log(user);
@@ -65,9 +67,10 @@ export const loginUser = asyncHandler(async (req, res) => {
     if (!isPasswordCorrect) {
       throw new Error(400, "password is not correct");
     }
-    const { accessToken, refreshToken } = generateAccessAndRefreshToken(
-      user._id
-    );
+    await generateAccessAndRefreshToken(user._id).then((res) => {
+      accessToken = res.accessToken;
+      refreshToken = res.refreshToken;
+    });
 
     console.log(accessToken);
     console.log(refreshToken);
@@ -88,4 +91,18 @@ export const loginUser = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  await findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 });
