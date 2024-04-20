@@ -79,15 +79,10 @@ export const loginUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
 
-    const cookieOptions = {
-      httpsOnly: true,
-      secure: true,
-    };
-
     res
       .status(200)
-      .cookie("accessToken", accessToken, cookieOptions)
-      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken)
+      .cookie("refreshToken", refreshToken)
       .json({ user: loggedInUser });
   } catch (error) {
     console.log(error);
