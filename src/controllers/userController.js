@@ -65,6 +65,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     const isPasswordCorrect = await user.isPasswordCorrect(password);
 
     if (!isPasswordCorrect) {
+      res.json({ message: "Invalid credentials" });
       throw new Error(400, "password is not correct");
     }
     await generateAccessAndRefreshToken(user._id).then((res) => {
