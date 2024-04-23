@@ -79,7 +79,12 @@ export const loginUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
 
-    res
+    // const cookieOptions = {
+    //   httpOnly: true,
+    //   secure: true,
+    // };
+
+   return res
       .status(200)
       .cookie("accessToken", accessToken)
       .cookie("refreshToken", refreshToken)
