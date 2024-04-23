@@ -79,16 +79,18 @@ export const loginUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
 
-    // const cookieOptions = {
-    //   httpOnly: true,
-    //   secure: true,
-    // };
-
-   return res
+    const cookieOptions = {
+      // expires: new Date(new Date().getTime() + 5 * 10000),
+      httpOnly: true, // Secure against XSS attacks by making the cookie inaccessible to JavaScript.
+      secure: true,
+      // path: "/",
+      // sameSite: "strict",
+    };
+    res
       .status(200)
-      .cookie("accessToken", accessToken)
-      .cookie("refreshToken", refreshToken)
-      .json({ user: loggedInUser });
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .json({ user: loggedInUser, accessToken, refreshToken });
   } catch (error) {
     console.log(error);
   }
