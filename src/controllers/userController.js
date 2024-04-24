@@ -1,5 +1,6 @@
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import nodemailer from "nodemailer";
 
 const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
@@ -40,6 +41,29 @@ export const registerUser = asyncHandler(async (req, res) => {
       },
       code: 200,
       ok: true,
+    });
+
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "parasharm239@gmail.com",
+        pass: "#Pro71824",
+      },
+    });
+
+    var mailOptions = {
+      from: "parasharm239@gmail.com",
+      to: email,
+      subject: "Welcome to memorizer",
+      text: "Thanks for creating account with us, login to explore the features",
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
     });
   } catch (error) {
     console.log(error);
