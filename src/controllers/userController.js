@@ -47,7 +47,7 @@ export const registerUser = asyncHandler(async (req, res) => {
       service: "gmail",
       auth: {
         user: "parasharm239@gmail.com",
-        pass: "#Pro71824",
+        pass: "",
       },
     });
 
