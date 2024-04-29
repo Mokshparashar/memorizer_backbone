@@ -43,7 +43,8 @@ export const registerUser = asyncHandler(async (req, res) => {
       ok: true,
     })
   }
-  catch(){
+  catch(err){
+    console.log(err)
   }
    
 
