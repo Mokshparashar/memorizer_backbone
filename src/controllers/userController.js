@@ -41,8 +41,10 @@ export const registerUser = asyncHandler(async (req, res) => {
       },
       code: 200,
       ok: true,
-    });
-
+    })
+  }
+  catch(){
+  }
    
 
   
