@@ -79,8 +79,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     let user = await User.findOne({ email });
     console.log(user);
     if (!user) {
-      res.send({
-        message: "User not found",
+      res.json({
+        message: "Invalid credentials",
         code: 404,
         ok: false,
       });
@@ -89,7 +89,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     const isPasswordCorrect = await user.isPasswordCorrect(password);
 
     if (!isPasswordCorrect) {
-      res.json({ message: "Invalid credentials" });
+      res.json({ message: "Invalid credentials", code: 404, ok: false });
       throw new Error(400, "password is not correct");
     }
     await generateAccessAndRefreshToken(user._id).then((res) => {
@@ -147,4 +147,42 @@ export const logoutUser = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken = req.cookies.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new Error("user is not authenticated ");
+  }
+
+  try {
+    const decodedRefreshToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.fincById(decodedRefreshToken._id);
+
+    if (!user) {
+      throw new Error("user not found for refreshing token");
+    }
+
+    if (!decodedRefreshToken !== user?.refreshToken) {
+      throw new Error("token does not match at the condition of refreshing");
+    }
+
+    const options = {
+      httpOnly: true,
+    };
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
+
+    res
+      .send(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options);
+  } catch (error) {}
 });
