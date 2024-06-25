@@ -82,7 +82,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     const cookieOptions = {
       // expires: new Date(new Date().getTime() + 5 * 10000),
       // httpOnly: true, // Secure against XSS attacks by making the cookie inaccessible to JavaScript.
-      // secure: true,
+      secure: true,
       // path: "/",
       sameSite: "None",
     };
