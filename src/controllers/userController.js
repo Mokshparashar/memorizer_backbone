@@ -84,7 +84,7 @@ export const loginUser = asyncHandler(async (req, res) => {
       // httpOnly: true, // Secure against XSS attacks by making the cookie inaccessible to JavaScript.
       // secure: true,
       // path: "/",
-      sameSite: none,
+      sameSite: "None",
     };
     res
       .status(200)
