@@ -1,7 +1,6 @@
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-
 const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
 
@@ -41,16 +40,10 @@ export const registerUser = asyncHandler(async (req, res) => {
       },
       code: 200,
       ok: true,
-    })
+    });
+  } catch (err) {
+    console.log(err);
   }
-  catch(err){
-    console.log(err)
-  }
-   
-
-  
-
-   
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
@@ -91,7 +84,7 @@ export const loginUser = asyncHandler(async (req, res) => {
       // httpOnly: true, // Secure against XSS attacks by making the cookie inaccessible to JavaScript.
       // secure: true,
       // path: "/",
-      // sameSite: "strict",
+      sameSite: none,
     };
     res
       .status(200)
